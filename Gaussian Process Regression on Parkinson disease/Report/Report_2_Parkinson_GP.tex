@@ -12,7 +12,7 @@
 
 \title{Report 2:
 Gaussian Process Regression on Parkinson's disease data}
-\author{\hl{Name Surname, sXXXXXX}, \\ICT for Health attended in A.Y. 2021/22}
+\author{Abdurasul Bobonazarov, s267331, \\ICT for Health attended in A.Y. 2021/22}
 \date{November 25th, 2021}
 
 \begin{document}
@@ -81,7 +81,7 @@ The point estimation of $Y_N$ is $\hat{y}_N=\mu$.
 \end{itemize}
 
 The model hyperparameters are three: $\theta$, $r^2$ and $\sigma_\nu^2$. Since the training dataset stores normalized data, and $\sigma^2_\nu$ is small, parameter $\theta=\mathbf{R}_{Y,N}(n,n)$ (variance of $y_n$) was set equal to 1. 
-Hyperparameters $r^2$ and $\sigma_\nu^2$ were set to minimize the mean square error $\mathbb{E}\{[y_N-\hat{y}_N]^2\}$ for the validation dataset. In particular, for each point $(\mathbf{x}_N,y_N)$ in the validation dataset, the $N=10$ closer points in the training dataset were found, a set of possible values for $r^2$ and $\sigma_\nu^2$ was tried and the optimum values were found among the considered cases (see Fig. \ref{fig:GPR_optim}): \hl{these optimum values are $r^2_{opt}=\ldots$ and  $\sigma^2_{opt}=\ldots$}.
+Hyperparameters $r^2$ and $\sigma_\nu^2$ were set to minimize the mean square error $\mathbb{E}\{[y_N-\hat{y}_N]^2\}$ for the validation dataset. In particular, for each point $(\mathbf{x}_N,y_N)$ in the validation dataset, the $N=10$ closer points in the training dataset were found, a set of possible values for $r^2$ and $\sigma_\nu^2$ was tried and the optimum values were found among the considered cases (see Fig. \ref{fig:GPR_optim}): these optimum values are $r^2_{opt}=3.5$ and  $\sigma^2_{opt}=10^{-4}$.
 
 Fig. \ref{fig:GPR_regr} shows $\hat{y}$ versus $y$ whereas Fig. \ref{fig:GPR_regr_err} also shows the error bars ($\pm 3\sigma_y$ where $\sigma_y$ is the denormalized version of $\sigma$ in \eqref{eq:sigma}). The estimation error histogram is shown in Fig. \ref{fig:GPR_hist}. Figs. \ref{fig:GPR_regr_err}-\ref{fig:GPR_hist} were obtained using   $r^2_{opt}$ and  $\sigma^2_{opt}$.
 \begin{figure}
@@ -105,7 +105,7 @@ Fig. \ref{fig:GPR_regr} shows $\hat{y}$ versus $y$ whereas Fig. \ref{fig:GPR_reg
 \includegraphics[width=\textwidth]{GP_error_hist.png} \caption{Histogram of $y-\hat{y}$ for training, validation and test datasets.}
 \label{fig:GPR_hist}
 \end{subfigure}
-\caption{\hl{Gaussian Process Regression results.}}
+\caption{Gaussian Process Regression results.}
 \label{fig:GPR}
 \end{figure}
 
@@ -142,7 +142,7 @@ Figure \ref{fig:LLS} shows the results obtained with LLS. Note that, to get a me
 \caption{Histogram of $y-\hat{y}$ for training, validation and test datasets.}
 \label{fig:LLS_hist}
 \end{subfigure}
-\caption{\hl{Linear Least Squares results.}}
+\caption{Linear Least Squares results.}
 \label{fig:LLS}
 \end{figure}
 
@@ -151,7 +151,7 @@ Figure \ref{fig:LLS} shows the results obtained with LLS. Note that, to get a me
 
 It is evident, by comparing Figs. \ref{fig:GPR_regr} and \ref{fig:LLS_regr} that, with the Parkinson's dataset, Gaussian Process Regression (GPR) is more precise than linear regression, and this is also confirmed by the estimation error histograms in Figs. \ref{fig:GPR_hist} and \ref{fig:LLS_hist}. 
 
-Table \ref{ta:res} lists the main statistical properties of the estimation error $e=y-\hat{y}$ for the training, validation and test datasets.
+Table \ref{ta:res} lists the main statistical properties of the estimation error $e=y-\hat{y}$ for the training and test datasets.
 The mean square error of GPR is about 1/3 than that of LLS. 
 
 \begin{table}[h]
@@ -160,21 +160,24 @@ The mean square error of GPR is about 1/3 than that of LLS.
     \hline
 &  Dataset      & Err. Mean & Err. St. dev. & MSE & $R^2$\\
 \hline
-LLS &Training   &   &  &  & \\
-    &Validation &   &  &  & \\
-    &Test       &   &  &  & \\
+LLS &Training   & $-5.86*10^{-14}$  & 3.37  & 11.36  & 0.9881\\
+    &Test       & $-2.65*10^{-2}$  & 3.31  & 10.95  & 0.9883\\
 \hline
-GPR &Training    &   &  &  & \\
-    &Validation &   &  &  & \\
-    &Test       &   &  &  & \\
+GPR &Training   & 0.0181  & 1.391  & 1.935  & 0.9971\\
+    &Test       & 0.0061  & 1.829  & 3.345  & 0.995\\
 \hline
     \end{tabular}
-    \caption{\hl{Numerical comparison between GPR and LLS.}}
+    \caption{Numerical comparison between GPR and LLS.}
     \label{ta:res}
 \end{table}
 
 \section{Conclusions}
-\hl{.....}
+
+Results show that the GPR consistently managed to outperform the LLS scores. For instance, Error Standard deviation of GPR is around twice lower than that of LLS. And, the coefficient of determination of GPR is also quite good (nearer to 1) comparing with that of LLS. Additionally, both methods do not show overfitting problem with the dataset.\\
+It should be taken into account that these results are achieved using most relevant features (which are age, motor UPDRS and PPE) to predict total UPDRS. As the error standard deviation of GPR is much smaller than total UPDRS standard deviation value.\\
+However, as the doctors have to measure the motor UPDRS and PPE in order to use regression methods, it does not have time saving advantage. So, it is not acceptable from medical point of view, as the total UPDRS cannot be measured without medical examination of a neurologist.
+
+
 \begin{thebibliography}{9}
 \bibitem{UCI} \url{https://archive.ics.uci.edu/ml/datasets/Parkinsons+Telemonitoring}
 
