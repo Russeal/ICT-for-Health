@@ -35,7 +35,7 @@ def findROC(x,y):#
     #             = number of positives in x0/number of negatives in y
     Np=ii1.size# number of positive cases
     Nn=ii0.size# number of negative cases
-    data=np.zeros((Np+Nn,3),dtype=float)
+    data=np.zeros((Np+Nn,5),dtype=float)
     i=0
     ROCarea=0
     for thresh in xs:
@@ -46,6 +46,12 @@ def findROC(x,y):#
         data[i,0]=thresh
         data[i,1]=falsealarm
         data[i,2]=sens
+        d = 0.02
+        h = 0.98
+        # P(D|Tp)
+        data[i,3] = (sens * d)/(sens * d + falsealarm * h)
+        # P(H|Tn)
+        data[i,4] = ((1 - falsealarm) * h)/((1 - sens) * d + (1 - falsealarm) * h)
         if i>0:
             ROCarea=ROCarea+sens*(data[i-1,1]-data[i,1])
         i=i+1
@@ -67,11 +73,9 @@ ii0=np.argwhere(swab==0)
 ii1=np.argwhere(swab==1)
 
 
-
-
-
+# Test 1
 test1_V = np.reshape(Test1, (862,1))
-db_default = DBSCAN(eps = 3, min_samples = 3).fit(test1_V)
+db_default = DBSCAN(eps = 4, min_samples = 3).fit(test1_V)
 labels = db_default.labels_
 ii_labels_1=np.argwhere(labels==-1).flatten()
 Test1 = np.delete(Test1,ii_labels_1)
@@ -80,21 +84,8 @@ print(ii_labels_1)
 print('test')
 
 
-# Test 2
-test2_V = np.reshape(Test2, (862,1))
-db_default = DBSCAN(eps = 0.1, min_samples = 3).fit(test2_V)
-labels = db_default.labels_
-ii_labels_2=np.argwhere(labels==-1).flatten()
-Test2 = np.delete(Test2,ii_labels_2)
-swab2=np.delete(swab,ii_labels_2)
-ii0=np.argwhere(swab2==0)
-ii1=np.argwhere(swab2==1)
 
-print(ii_labels_2)
-print('test')
-
-
-
+#%%
 
 plt.figure()
 plt.hist(Test2[ii0],bins=100,density=True,label=r'$f_{r|H}(r|H)$')
@@ -107,8 +98,66 @@ plt.text(0., 0., 'ICT for Health',
 plt.title('Test2')
 
 
+
 #%%
-data_Test2, area=findROC(Test2,swab2)
+data_Test1, area=findROC(Test1,swab1)
+print("Area: {}".format(area))
+
+plt.figure()
+plt.plot(data_Test1[:,1],data_Test1[:,2],'-',label='Test1')
+plt.xlabel('FA')
+plt.ylabel('Sens')
+plt.grid()
+plt.legend()
+plt.title('ROC - ')
+plt.tight_layout()
+plt.savefig('./../figures/Figure_ROC1.png')
+
+plt.figure()
+plt.plot(data_Test1[:,0],data_Test1[:,1],'.',label='False alarm')
+plt.plot(data_Test1[:,0],data_Test1[:,2],'.',label='Sensitivity')
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test1')
+plt.grid()
+
+plt.figure()
+plt.plot(data_Test1[:,0],1-data_Test1[:,1],'-',label='Specificity')
+plt.plot(data_Test1[:,0],data_Test1[:,2],'-',label='Sensitivity')
+# plt.xlim(7.5, 8)
+# plt.ylim(0.8, 1)
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test1')
+plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/Figure_sens_spec_thresh1.png')
+
+plt.figure()
+plt.plot(data_Test1[:,0],data_Test1[:,3],'-',label='P(D|Tp)')
+plt.plot(data_Test1[:,0],1-data_Test1[:,4],'-',label='P(D|Tn)')
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test1')
+plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/P(D|Tn)_and_P(D|Tp)_vs_thresh.png')
+
+plt.figure()
+plt.plot(data_Test1[:,0],1-data_Test1[:,3],'-',label='P(H|Tp)')
+plt.plot(data_Test1[:,0],data_Test1[:,4],'-',label='P(H|Tn)')
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test1')
+plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/P(H|Tn)_and_P(H|Tp)_vs_thresh.png')
+plt.show()
+
+
+#%%
+data_Test2, area=findROC(Test2,swab)
+print("Area: {}".format(area))
 
 plt.figure()
 plt.plot(data_Test2[:,1],data_Test2[:,2],'-',label='Test2')
@@ -117,6 +166,9 @@ plt.ylabel('Sens')
 plt.grid()
 plt.legend()
 plt.title('ROC - ')
+plt.tight_layout()
+plt.savefig('./../figures/Figure_ROC2.png')
+
 plt.figure()
 plt.plot(data_Test2[:,0],data_Test2[:,1],'.',label='False alarm')
 plt.plot(data_Test2[:,0],data_Test2[:,2],'.',label='Sensitivity')
@@ -128,9 +180,42 @@ plt.grid()
 plt.figure()
 plt.plot(data_Test2[:,0],1-data_Test2[:,1],'-',label='Specificity')
 plt.plot(data_Test2[:,0],data_Test2[:,2],'-',label='Sensitivity')
+# plt.xlim(0, 0.8)
+# plt.ylim(0.8, 1)
 plt.legend()
 plt.xlabel('threshold')
 plt.title('Test2')
 plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/Figure_sens_spec_thresh2.png')
+
+
+
+
+plt.figure()
+plt.plot(data_Test2[:,0],data_Test2[:,3],'-',label='P(D|Tp)')
+plt.plot(data_Test2[:,0],1-data_Test2[:,4],'-',label='P(D|Tn)')
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test2')
+plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/P(D|Tn)_and_P(D|Tp)_vs_thresh2.png')
+
+plt.figure()
+plt.plot(data_Test2[:,0],1-data_Test2[:,3],'-',label='P(H|Tp)')
+plt.plot(data_Test2[:,0],data_Test2[:,4],'-',label='P(H|Tn)')
+plt.legend()
+plt.xlabel('threshold')
+plt.title('Test2')
+plt.grid()
+plt.tight_layout()
+plt.savefig('./../figures/P(H|Tn)_and_P(H|Tp)_vs_thresh2.png')
+plt.show()
+
+
+
+
+
 
 
